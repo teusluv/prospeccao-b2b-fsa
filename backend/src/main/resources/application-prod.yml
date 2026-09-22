@@ -1,5 +1,15 @@
+# Perfil de produção: PostgreSQL (local, Docker ou Supabase).
 spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/prospeccao}
     username: ${DB_USUARIO:prospeccao}
     password: ${DB_SENHA:prospeccao}
+    hikari:
+      # Tabelas ficam num schema próprio. No Supabase isso as mantém fora do schema "public",
+      # que é exposto publicamente pela API REST automática do Supabase.
+      schema: ${DB_SCHEMA:prospeccao}
+      maximum-pool-size: ${DB_POOL:5}
+  flyway:
+    schemas: ${DB_SCHEMA:prospeccao}
+    default-schema: ${DB_SCHEMA:prospeccao}
+    create-schemas: true

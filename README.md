@@ -39,6 +39,30 @@ cd backend
 docker compose up --build
 ```
 
+### Com banco no Supabase
+
+O Supabase hospeda o **banco de dados** (PostgreSQL). O backend Java continua rodando no seu computador ou em
+um serviço de hospedagem (Render, Railway, Fly.io...) e se conecta ao banco do Supabase.
+
+1. Crie um projeto em https://supabase.com e guarde a senha do banco.
+2. No painel do projeto, clique em **Connect** e copie os dados da conexão **Session pooler**
+   (porta 5432). Não use a "Direct connection" (só funciona em IPv6) nem o "Transaction pooler" (porta 6543).
+3. Rode o backend apontando para o Supabase:
+
+```bash
+cd backend
+export SPRING_PROFILES_ACTIVE=prod
+export DB_URL="jdbc:postgresql://aws-0-SUA-REGIAO.pooler.supabase.com:5432/postgres?sslmode=require"
+export DB_USUARIO="postgres.SEU_PROJECT_REF"
+export DB_SENHA="sua-senha-do-banco"
+./mvnw spring-boot:run
+```
+
+As tabelas são criadas automaticamente (Flyway) no schema **`prospeccao`**, visível em **Table Editor** →
+seletor de schema. Elas ficam fora do schema `public` de propósito: o Supabase expõe o `public` publicamente
+pela API REST automática dele, e aí ficariam, por exemplo, os hashes de senha da tabela `usuarios`.
+**Não** adicione o schema `prospeccao` em *Settings → API → Exposed schemas*.
+
 ## Empresas sem site (Google Maps)
 
 `POST /api/prospeccao/google-maps` pesquisa no Google Maps e cadastra como lead **apenas as empresas que não
@@ -92,6 +116,8 @@ Erros seguem o padrão RFC 7807 (`application/problem+json`); erros de validaç�
 |---|---|---|
 | `SPRING_PROFILES_ACTIVE` | `dev` | `dev` = H2 em memória, `prod` = PostgreSQL |
 | `DB_URL`, `DB_USUARIO`, `DB_SENHA` | localhost/prospeccao | Conexão PostgreSQL (perfil `prod`) |
+| `DB_SCHEMA` | `prospeccao` | Schema onde as tabelas são criadas (perfil `prod`) |
+| `DB_POOL` | `5` | Máximo de conexões abertas com o banco |
 | `JWT_SECRET` | valor de exemplo | **Troque em produção** (mín. 32 caracteres) |
 | `JWT_EXPIRACAO_MINUTOS` | `480` | Validade do token |
 | `CORS_ORIGENS` | `http://localhost:3000,http://localhost:5173` | Origens do frontend |
