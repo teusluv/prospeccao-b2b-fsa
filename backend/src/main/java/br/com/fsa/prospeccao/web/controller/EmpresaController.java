@@ -53,7 +53,7 @@ public class EmpresaController {
     }
 
     @Operation(summary = "Lista empresas com filtros e paginação",
-            description = "Ex.: /api/empresas?busca=acme&etapa=QUALIFICADO&page=0&size=20&sort=razaoSocial,asc")
+            description = "Ex.: /api/empresas?busca=acme&etapa=QUALIFICADO&semSite=true&page=0&size=20&sort=razaoSocial,asc")
     @GetMapping
     public PaginaResponse<EmpresaResponse> listar(
             @RequestParam(required = false) String busca,
@@ -62,8 +62,9 @@ public class EmpresaController {
             @RequestParam(required = false) String cidade,
             @RequestParam(required = false) String uf,
             @RequestParam(required = false) Long responsavelId,
+            @RequestParam(required = false) Boolean semSite,
             @PageableDefault(size = 20, sort = "atualizadoEm", direction = Sort.Direction.DESC) Pageable pageable) {
-        var filtro = new EmpresaService.Filtro(busca, etapa, segmento, cidade, uf, responsavelId);
+        var filtro = new EmpresaService.Filtro(busca, etapa, segmento, cidade, uf, responsavelId, semSite);
         return PaginaResponse.de(service.listar(filtro, pageable));
     }
 

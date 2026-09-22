@@ -35,7 +35,7 @@ public class EmpresaService {
     }
 
     public record Filtro(String busca, EtapaFunil etapa, String segmento, String cidade, String uf,
-                         Long responsavelId) {
+                         Long responsavelId, Boolean semSite) {
     }
 
     @Transactional(readOnly = true)
@@ -205,6 +205,11 @@ public class EmpresaService {
         }
         if (f.uf() != null && !f.uf().isBlank()) {
             specs.add((root, q, cb) -> cb.equal(root.get("uf"), f.uf().trim().toUpperCase(Locale.ROOT)));
+        }
+        if (Boolean.TRUE.equals(f.semSite())) {
+            specs.add((root, q, cb) -> cb.or(cb.isNull(root.get("site")), cb.equal(cb.trim(root.get("site")), "")));
+        } else if (Boolean.FALSE.equals(f.semSite())) {
+            specs.add((root, q, cb) -> cb.and(cb.isNotNull(root.get("site")), cb.notEqual(cb.trim(root.get("site")), "")));
         }
         if (f.responsavelId() != null) {
             specs.add((root, q, cb) -> cb.equal(root.get("responsavel").get("id"), f.responsavelId()));

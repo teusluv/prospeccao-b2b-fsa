@@ -1,0 +1,45 @@
+# Exemplos de chamadas — abra no VS Code com a extensão "REST Client" e clique em "Send Request".
+@api = http://localhost:8080
+
+### Login (copie o token da resposta para @token)
+# @name login
+POST {{api}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "admin@fsa.com.br", "senha": "admin123" }
+
+###
+@token = {{login.response.body.token}}
+
+### Buscar no Google Maps e cadastrar empresas SEM site (simulação: nada é gravado)
+POST {{api}}/api/prospeccao/google-maps
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "termo": "restaurantes", "cidade": "Feira de Santana", "uf": "BA", "simular": true }
+
+### Mesma busca, agora gravando
+POST {{api}}/api/prospeccao/google-maps
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "termo": "restaurantes", "cidade": "Feira de Santana", "uf": "BA" }
+
+### Listar empresas sem site
+GET {{api}}/api/empresas?semSite=true&size=50
+Authorization: Bearer {{token}}
+
+### Criar empresa manualmente
+POST {{api}}/api/empresas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "razaoSocial": "Acme Comércio LTDA", "cnpj": "11.222.333/0001-81", "cidade": "Feira de Santana", "uf": "BA", "segmento": "Varejo", "valorEstimado": 2500 }
+
+### Dashboard
+GET {{api}}/api/dashboard
+Authorization: Bearer {{token}}
+
+### Follow-ups vencidos do usuário logado
+GET {{api}}/api/follow-ups?meus=true
+Authorization: Bearer {{token}}

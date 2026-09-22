@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 @ConfigurationProperties(prefix = "app")
-public record AppProperties(Jwt jwt, Cors cors, Admin admin) {
+public record AppProperties(Jwt jwt, Cors cors, Admin admin, GooglePlaces googlePlaces) {
 
     public record Jwt(String secret, long expiracaoMinutos) {
     }
@@ -14,5 +14,8 @@ public record AppProperties(Jwt jwt, Cors cors, Admin admin) {
     }
 
     public record Admin(String nome, String email, String senha) {
+    }
+
+    public record GooglePlaces(String apiKey, String baseUrl) {
     }
 }

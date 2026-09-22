@@ -59,6 +59,9 @@ public class Empresa {
 
     private String observacoes;
 
+    @Column(name = "google_place_id", unique = true)
+    private String googlePlaceId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsavel_id")
     private Usuario responsavel;
@@ -112,6 +115,8 @@ public class Empresa {
     public void setMotivoPerda(String motivoPerda) { this.motivoPerda = motivoPerda; }
     public String getObservacoes() { return observacoes; }
     public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
+    public String getGooglePlaceId() { return googlePlaceId; }
+    public void setGooglePlaceId(String googlePlaceId) { this.googlePlaceId = googlePlaceId; }
     public Usuario getResponsavel() { return responsavel; }
     public void setResponsavel(Usuario responsavel) { this.responsavel = responsavel; }
     public Instant getCriadoEm() { return criadoEm; }

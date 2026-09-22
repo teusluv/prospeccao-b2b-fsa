@@ -22,6 +22,8 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long>, JpaSpec
 
     boolean existsByCnpj(String cnpj);
 
+    boolean existsByGooglePlaceId(String googlePlaceId);
+
     boolean existsByCnpjAndIdNot(String cnpj, Long id);
 
     @Query("select e.etapa as etapa, count(e) as quantidade, coalesce(sum(e.valorEstimado), 0) as valor "

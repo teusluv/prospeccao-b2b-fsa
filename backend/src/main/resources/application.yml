@@ -35,3 +35,7 @@ app:
     nome: ${ADMIN_NOME:Administrador}
     email: ${ADMIN_EMAIL:admin@fsa.com.br}
     senha: ${ADMIN_SENHA:admin123}
+  google-places:
+    # Chave da Places API (New), usada em /api/prospeccao/google-maps.
+    api-key: ${GOOGLE_PLACES_API_KEY:}
+    base-url: https://places.googleapis.com

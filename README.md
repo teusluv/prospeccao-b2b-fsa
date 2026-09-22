@@ -1,0 +1,99 @@
+# Prospecção B2B — FSA
+
+Backend em **Java 21 + Spring Boot 3.5** para gestão de prospecção B2B: empresas (leads), contatos,
+interações com follow-up, funil de vendas, dashboard e **busca automática de empresas sem site no Google Maps**.
+
+## Abrir no VS Code
+
+```bash
+git clone https://github.com/teusluv/prospeccao-b2b-fsa.git
+cd prospeccao-b2b-fsa
+git checkout claude/brave-pascal-nj3677
+code .
+```
+
+Aceite as extensões recomendadas (Java Extension Pack, Spring Boot Tools, REST Client).
+Para rodar: aba **Run and Debug** → **API (H2 em memória)** → ▶️.
+O arquivo `backend/requisicoes.http` tem chamadas prontas para testar a API (botão "Send Request").
+
+## Rodando pelo terminal
+
+Pré-requisito: JDK 21. O Maven é baixado automaticamente pelo wrapper.
+
+```bash
+cd backend
+./mvnw spring-boot:run          # Windows: mvnw.cmd spring-boot:run
+```
+
+- API: http://localhost:8080
+- Swagger (documentação interativa): http://localhost:8080/swagger-ui.html
+- Console H2: http://localhost:8080/h2-console (JDBC URL `jdbc:h2:mem:prospeccao`, usuário `sa`)
+- Login inicial: `admin@fsa.com.br` / `admin123` (troque via `ADMIN_EMAIL` / `ADMIN_SENHA`)
+
+Testes: `./mvnw test`
+
+### Com PostgreSQL (Docker)
+
+```bash
+cd backend
+docker compose up --build
+```
+
+## Empresas sem site (Google Maps)
+
+`POST /api/prospeccao/google-maps` pesquisa no Google Maps e cadastra como lead **apenas as empresas que não
+têm site**. Empresas que só têm Instagram/Facebook/WhatsApp também contam como "sem site"
+(desligue com `"redeSocialContaComoSemSite": false`). Empresas fechadas definitivamente são ignoradas e
+nada é cadastrado duas vezes.
+
+```json
+{ "termo": "restaurantes", "cidade": "Feira de Santana", "uf": "BA", "simular": true }
+```
+
+`"simular": true` só mostra o que seria importado. Cada busca traz no máximo 60 resultados (limite do Google),
+então para cobrir a cidade inteira rode várias buscas por segmento (restaurantes, padarias, oficinas,
+salões de beleza, clínicas...).
+
+Requer uma chave da **Places API (New)** do Google Cloud na variável `GOOGLE_PLACES_API_KEY`
+([como criar](https://developers.google.com/maps/documentation/places/web-service/get-api-key)).
+
+Para listar os leads sem site já cadastrados: `GET /api/empresas?semSite=true`.
+
+## Principais endpoints
+
+Todos (exceto login) exigem o header `Authorization: Bearer <token>`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/api/auth/login` | Login, devolve o token JWT |
+| GET | `/api/auth/me` | Usuário logado |
+| POST | `/api/auth/trocar-senha` | Troca a própria senha |
+| GET/POST/PUT | `/api/usuarios` | Gestão de usuários (só ADMIN) |
+| GET | `/api/empresas` | Lista com filtros: `busca`, `etapa`, `segmento`, `cidade`, `uf`, `responsavelId`, `semSite`, paginação `page`/`size`/`sort` |
+| POST/PUT/DELETE | `/api/empresas/{id}` | CRUD de empresas (excluir: só ADMIN) |
+| PATCH | `/api/empresas/{id}/etapa` | Move no funil (`motivoPerda` obrigatório para PERDIDO) |
+| POST | `/api/empresas/importar` | Importa CSV (campo `arquivo`; coluna `razaoSocial` obrigatória) |
+| POST | `/api/prospeccao/google-maps` | Busca empresas sem site no Google Maps |
+| GET/POST | `/api/empresas/{id}/contatos` | Contatos da empresa |
+| PUT/DELETE | `/api/contatos/{id}` | Edita/remove contato |
+| GET/POST | `/api/empresas/{id}/interacoes` | Histórico de ligações, e-mails, reuniões... |
+| GET | `/api/follow-ups?meus=true` | Follow-ups vencidos |
+| PATCH | `/api/interacoes/{id}/concluir-follow-up` | Marca follow-up como feito |
+| GET | `/api/dashboard` | Funil, valores, conversão, follow-ups |
+
+Etapas do funil: `NOVO → CONTATADO → QUALIFICADO → PROPOSTA → NEGOCIACAO → GANHO / PERDIDO`.
+Registrar a primeira interação move automaticamente um lead de `NOVO` para `CONTATADO`.
+
+Erros seguem o padrão RFC 7807 (`application/problem+json`); erros de validação trazem o mapa `campos`.
+
+## Variáveis de ambiente
+
+| Variável | Padrão | Uso |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | `dev` | `dev` = H2 em memória, `prod` = PostgreSQL |
+| `DB_URL`, `DB_USUARIO`, `DB_SENHA` | localhost/prospeccao | Conexão PostgreSQL (perfil `prod`) |
+| `JWT_SECRET` | valor de exemplo | **Troque em produção** (mín. 32 caracteres) |
+| `JWT_EXPIRACAO_MINUTOS` | `480` | Validade do token |
+| `CORS_ORIGENS` | `http://localhost:3000,http://localhost:5173` | Origens do frontend |
+| `ADMIN_NOME`, `ADMIN_EMAIL`, `ADMIN_SENHA` | admin@fsa.com.br / admin123 | Admin criado no primeiro start |
+| `GOOGLE_PLACES_API_KEY` | vazio | Habilita a busca no Google Maps |

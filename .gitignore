@@ -1,6 +1,5 @@
 backend/target/
 *.iml
 .idea/
-.vscode/
 .DS_Store
 .env

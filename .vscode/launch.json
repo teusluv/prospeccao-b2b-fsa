@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "API (H2 em memória)",
+      "request": "launch",
+      "mainClass": "br.com.fsa.prospeccao.ProspeccaoApplication",
+      "projectName": "prospeccao-b2b",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      }
+    },
+    {
+      "type": "java",
+      "name": "API (PostgreSQL do docker-compose)",
+      "request": "launch",
+      "mainClass": "br.com.fsa.prospeccao.ProspeccaoApplication",
+      "projectName": "prospeccao-b2b",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "prod",
+        "DB_URL": "jdbc:postgresql://localhost:5432/prospeccao"
+      }
+    }
+  ]
+}
