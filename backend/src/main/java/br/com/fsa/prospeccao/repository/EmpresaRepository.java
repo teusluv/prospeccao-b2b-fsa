@@ -22,7 +22,7 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long>, JpaSpec
 
     boolean existsByCnpj(String cnpj);
 
-    boolean existsByGooglePlaceId(String googlePlaceId);
+    boolean existsByIdExterno(String idExterno);
 
     boolean existsByCnpjAndIdNot(String cnpj, Long id);
 

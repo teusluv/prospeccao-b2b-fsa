@@ -11,6 +11,17 @@ Content-Type: application/json
 ###
 @token = {{login.response.body.token}}
 
+### Ramos disponíveis no OpenStreetMap
+GET {{api}}/api/prospeccao/fontes
+Authorization: Bearer {{token}}
+
+### OpenStreetMap (gratuito): restaurantes sem site em Feira de Santana (simulação)
+POST {{api}}/api/prospeccao/buscar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "fonte": "OPENSTREETMAP", "termo": "RESTAURANTES", "cidade": "Feira de Santana", "uf": "BA", "simular": true }
+
 ### Buscar no Google Maps e cadastrar empresas SEM site (simulação: nada é gravado)
 POST {{api}}/api/prospeccao/google-maps
 Authorization: Bearer {{token}}

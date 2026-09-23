@@ -1,6 +1,6 @@
 import type {
-  BuscaGoogleMapsResponse, Contato, ContatoForm, Dashboard, Empresa, EmpresaForm, EtapaFunil,
-  ImportacaoResponse, Interacao, InteracaoForm, LoginResponse, Pagina, Perfil, Usuario,
+  BuscaResponse, Contato, ContatoForm, Dashboard, Empresa, EmpresaForm, EtapaFunil,
+  Fonte, Fontes, ImportacaoResponse, Interacao, InteracaoForm, LoginResponse, Pagina, Perfil, Usuario,
 } from './tipos'
 
 const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? ''
@@ -122,10 +122,11 @@ export const api = {
   followUps: (ate: string | null, meus: boolean) => req<Interacao[]>('GET', '/api/follow-ups' + qs({ ate, meus })),
   concluirFollowUp: (id: number) => req<Interacao>('PATCH', `/api/interacoes/${id}/concluir-follow-up`),
 
-  buscarGoogleMaps: (dados: {
-    termo: string; cidade: string; uf?: string; maxResultados?: number
+  fontes: () => req<Fontes>('GET', '/api/prospeccao/fontes'),
+  buscarSemSite: (dados: {
+    fonte: Fonte; termo: string; cidade: string; uf?: string; maxResultados?: number
     redeSocialContaComoSemSite?: boolean; simular?: boolean
-  }) => req<BuscaGoogleMapsResponse>('POST', '/api/prospeccao/google-maps', dados),
+  }) => req<BuscaResponse>('POST', '/api/prospeccao/buscar', dados),
 
   usuarios: () => req<Usuario[]>('GET', '/api/usuarios'),
   criarUsuario: (dados: { nome: string; email: string; senha: string; perfil: Perfil }) =>

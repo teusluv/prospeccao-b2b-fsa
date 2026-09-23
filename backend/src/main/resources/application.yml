@@ -39,3 +39,6 @@ app:
     # Chave da Places API (New), usada em /api/prospeccao/google-maps.
     api-key: ${GOOGLE_PLACES_API_KEY:}
     base-url: https://places.googleapis.com
+  osm:
+    # API pública e gratuita do OpenStreetMap (Overpass). Pode trocar por outro servidor Overpass.
+    overpass-url: ${OSM_OVERPASS_URL:https://overpass-api.de/api/interpreter}

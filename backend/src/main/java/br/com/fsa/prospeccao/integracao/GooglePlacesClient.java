@@ -36,10 +36,14 @@ public class GooglePlacesClient {
         this.apiKey = props.googlePlaces().apiKey();
     }
 
+    public boolean configurado() {
+        return apiKey != null && !apiKey.isBlank();
+    }
+
     public List<Lugar> buscar(String consulta, int maxResultados) {
-        if (apiKey == null || apiKey.isBlank()) {
+        if (!configurado()) {
             throw new RegraNegocioException(
-                    "Busca no Google Maps indisponível: configure a variável GOOGLE_PLACES_API_KEY");
+                    "Busca no Google Maps indisponível: configure a variável GOOGLE_PLACES_API_KEY (ou use o OpenStreetMap, que é gratuito)");
         }
         int limite = Math.min(Math.max(maxResultados, 1), MAX_RESULTADOS);
         List<Lugar> lugares = new ArrayList<>();

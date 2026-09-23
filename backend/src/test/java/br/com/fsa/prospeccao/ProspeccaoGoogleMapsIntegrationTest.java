@@ -4,12 +4,15 @@ import br.com.fsa.prospeccao.integracao.GooglePlacesClient;
 import br.com.fsa.prospeccao.integracao.GooglePlacesClient.ComponenteEndereco;
 import br.com.fsa.prospeccao.integracao.GooglePlacesClient.Lugar;
 import br.com.fsa.prospeccao.integracao.GooglePlacesClient.Texto;
+import br.com.fsa.prospeccao.integracao.LugarExterno;
+import br.com.fsa.prospeccao.integracao.OpenStreetMapClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ProspeccaoGoogleMapsIntegrationTest {
 
     @Autowired
@@ -35,6 +39,9 @@ class ProspeccaoGoogleMapsIntegrationTest {
 
     @MockitoBean
     GooglePlacesClient googlePlaces;
+
+    @MockitoBean
+    OpenStreetMapClient openStreetMap;
 
     private static Lugar lugar(String id, String nome, String site, String status) {
         var cidade = new ComponenteEndereco("Feira de Santana", "Feira de Santana", List.of("administrative_area_level_2"));
@@ -89,5 +96,38 @@ class ProspeccaoGoogleMapsIntegrationTest {
                 .andExpect(jsonPath("$.conteudo[0].origem").value("Google Maps"))
                 .andExpect(jsonPath("$.conteudo[0].uf").value("BA"))
                 .andExpect(jsonPath("$.conteudo[0].cidade").value("Feira de Santana"));
+    }
+
+    @Test
+    void openStreetMapEhAFontePadraoESemChave() throws Exception {
+        when(openStreetMap.buscar(eq("RESTAURANTES"), eq("Feira de Santana"), eq("BA"), anyInt())).thenReturn(List.of(
+                new LugarExterno("osm:node/1", "Tempero Baiano", "restaurant", "Rua A, 1", "Feira de Santana", "BA",
+                        "+55 75 3221-0000", "contato@tempero.com", null, "https://www.openstreetmap.org/node/1", false),
+                new LugarExterno("osm:node/2", "Bistrô Com Site", "restaurant", null, "Feira de Santana", "BA",
+                        null, null, "https://bistro.com.br", "https://www.openstreetmap.org/node/2", false)));
+        when(googlePlaces.configurado()).thenReturn(false);
+
+        String login = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"admin@fsa.com.br\",\"senha\":\"admin123\"}"))
+                .andReturn().getResponse().getContentAsString();
+        String token = "Bearer " + json.readTree(login).get("token").asText();
+
+        mvc.perform(get("/api/prospeccao/fontes").header("Authorization", token))
+                .andExpect(jsonPath("$.googleMapsDisponivel").value(false))
+                .andExpect(jsonPath("$.categoriasOpenStreetMap[0].chave").value("RESTAURANTES"));
+
+        mvc.perform(post("/api/prospeccao/buscar").header("Authorization", token).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"termo\":\"RESTAURANTES\",\"cidade\":\"Feira de Santana\",\"uf\":\"BA\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fonte").value("OPENSTREETMAP"))
+                .andExpect(jsonPath("$.encontradas").value(2))
+                .andExpect(jsonPath("$.importadas").value(1))
+                .andExpect(jsonPath("$.lugares[0].idExterno").value("osm:node/1"))
+                .andExpect(jsonPath("$.lugares[1].situacao").value("TEM_SITE"));
+
+        mvc.perform(get("/api/empresas?busca=tempero").header("Authorization", token))
+                .andExpect(jsonPath("$.conteudo[0].origem").value("OpenStreetMap"))
+                .andExpect(jsonPath("$.conteudo[0].email").value("contato@tempero.com"))
+                .andExpect(jsonPath("$.conteudo[0].telefone").value("+55 75 3221-0000"));
     }
 }

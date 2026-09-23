@@ -123,19 +123,27 @@ export interface Dashboard {
 
 export type SituacaoLugar = 'IMPORTADA' | 'JA_CADASTRADA' | 'TEM_SITE' | 'FECHADA'
 
+export type Fonte = 'OPENSTREETMAP' | 'GOOGLE_MAPS'
+
 export interface LugarEncontrado {
-  googlePlaceId: string
+  idExterno: string
   nome: string | null
   categoria: string | null
   endereco: string | null
   telefone: string | null
   site: string | null
-  googleMapsUrl: string | null
+  mapaUrl: string | null
   situacao: SituacaoLugar
   empresaId: number | null
 }
 
-export interface BuscaGoogleMapsResponse {
+export interface Fontes {
+  googleMapsDisponivel: boolean
+  categoriasOpenStreetMap: { chave: string; nome: string }[]
+}
+
+export interface BuscaResponse {
+  fonte: Fonte
   encontradas: number
   semSite: number
   importadas: number

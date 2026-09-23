@@ -20,7 +20,7 @@ class GooglePlacesClientTest {
 
     private static AppProperties props(String chave) {
         return new AppProperties(null, null, null,
-                new AppProperties.GooglePlaces(chave, "https://places.googleapis.com"));
+                new AppProperties.GooglePlaces(chave, "https://places.googleapis.com"), null);
     }
 
     @Test

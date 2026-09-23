@@ -88,23 +88,21 @@ seletor de schema. Elas ficam fora do schema `public` de propósito: o Supabase 
 pela API REST automática dele, e aí ficariam, por exemplo, os hashes de senha da tabela `usuarios`.
 **Não** adicione o schema `prospeccao` em *Settings → API → Exposed schemas*.
 
-## Empresas sem site (Google Maps)
+## Empresas sem site (OpenStreetMap ou Google Maps)
 
-`POST /api/prospeccao/google-maps` pesquisa no Google Maps e cadastra como lead **apenas as empresas que não
-têm site**. Empresas que só têm Instagram/Facebook/WhatsApp também contam como "sem site"
-(desligue com `"redeSocialContaComoSemSite": false`). Empresas fechadas definitivamente são ignoradas e
-nada é cadastrado duas vezes.
+`POST /api/prospeccao/buscar` procura empresas de uma cidade e cadastra como lead **apenas as que não têm site**.
+Quem só tem Instagram/Facebook/WhatsApp também conta como "sem site" (desligue com
+`"redeSocialContaComoSemSite": false`). Empresas fechadas são ignoradas e nada é cadastrado duas vezes.
+`"simular": true` só mostra o que seria importado.
 
 ```json
-{ "termo": "restaurantes", "cidade": "Feira de Santana", "uf": "BA", "simular": true }
+{ "fonte": "OPENSTREETMAP", "termo": "RESTAURANTES", "cidade": "Feira de Santana", "uf": "BA", "simular": true }
 ```
 
-`"simular": true` só mostra o que seria importado. Cada busca traz no máximo 60 resultados (limite do Google),
-então para cobrir a cidade inteira rode várias buscas por segmento (restaurantes, padarias, oficinas,
-salões de beleza, clínicas...).
-
-Requer uma chave da **Places API (New)** do Google Cloud na variável `GOOGLE_PLACES_API_KEY`
-([como criar](https://developers.google.com/maps/documentation/places/web-service/get-api-key)).
+| Fonte | Custo | Observações |
+|---|---|---|
+| `OPENSTREETMAP` (padrão) | Gratuito, sem chave | Usa a [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API). `termo` é um ramo (lista em `GET /api/prospeccao/fontes`) ou parte do nome. A cidade deve estar escrita como no mapa. Tem menos empresas cadastradas que o Google. Servidor configurável em `OSM_OVERPASS_URL`. |
+| `GOOGLE_MAPS` | Cota gratuita mensal; exige cartão no Google Cloud | Requer `GOOGLE_PLACES_API_KEY` ([Places API (New)](https://developers.google.com/maps/documentation/places/web-service/get-api-key)). Máximo de 60 resultados por busca. Configure um limite diário de cota para nunca ser cobrado. |
 
 Para listar os leads sem site já cadastrados: `GET /api/empresas?semSite=true`.
 
@@ -122,7 +120,8 @@ Todos (exceto login) exigem o header `Authorization: Bearer <token>`.
 | POST/PUT/DELETE | `/api/empresas/{id}` | CRUD de empresas (excluir: só ADMIN) |
 | PATCH | `/api/empresas/{id}/etapa` | Move no funil (`motivoPerda` obrigatório para PERDIDO) |
 | POST | `/api/empresas/importar` | Importa CSV (campo `arquivo`; coluna `razaoSocial` obrigatória) |
-| POST | `/api/prospeccao/google-maps` | Busca empresas sem site no Google Maps |
+| GET | `/api/prospeccao/fontes` | Fontes disponíveis e ramos do OpenStreetMap |
+| POST | `/api/prospeccao/buscar` | Busca empresas sem site (OpenStreetMap ou Google Maps) |
 | GET/POST | `/api/empresas/{id}/contatos` | Contatos da empresa |
 | PUT/DELETE | `/api/contatos/{id}` | Edita/remove contato |
 | GET/POST | `/api/empresas/{id}/interacoes` | Histórico de ligações, e-mails, reuniões... |
@@ -147,4 +146,5 @@ Erros seguem o padrão RFC 7807 (`application/problem+json`); erros de validaç�
 | `JWT_EXPIRACAO_MINUTOS` | `480` | Validade do token |
 | `CORS_ORIGENS` | `http://localhost:3000,http://localhost:5173` | Origens do frontend |
 | `ADMIN_NOME`, `ADMIN_EMAIL`, `ADMIN_SENHA` | admin@fsa.com.br / admin123 | Admin criado no primeiro start |
-| `GOOGLE_PLACES_API_KEY` | vazio | Habilita a busca no Google Maps |
+| `GOOGLE_PLACES_API_KEY` | vazio | Habilita a busca no Google Maps (opcional) |
+| `OSM_OVERPASS_URL` | `https://overpass-api.de/api/interpreter` | Servidor Overpass do OpenStreetMap |
