@@ -3,3 +3,4 @@ backend/target/
 .idea/
 .DS_Store
 .env
+*.log

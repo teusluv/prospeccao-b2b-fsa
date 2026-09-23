@@ -6,6 +6,17 @@ Sistema de prospecção B2B: empresas (leads), contatos, interações com follow
 - `backend/` — API em **Java 21 + Spring Boot 3.5** (PostgreSQL/Supabase)
 - `frontend/` — site em **React + TypeScript (Vite)**
 
+## Jeito mais fácil: um comando só
+
+```bash
+./iniciar.sh
+```
+
+Na primeira vez ele cria `backend/.env` a partir de `backend/.env.example`. Abra esse arquivo
+(`open -e backend/.env` no Mac), coloque a senha do banco do Supabase e rode `./iniciar.sh` de novo.
+O script liga o backend, espera ficar pronto, liga o site e abre o navegador. **Ctrl+C** desliga os dois.
+Se o backend não subir, ele mostra o motivo (senha errada, endereço errado, sem rede...).
+
 ## Rodando o site (frontend)
 
 Pré-requisito: Node.js 20+ e o backend rodando em `localhost:8080`.
