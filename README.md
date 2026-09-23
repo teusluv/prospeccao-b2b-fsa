@@ -1,7 +1,32 @@
-# Prospecção B2B — FSA
+# ProspectRadar — Prospecção B2B FSA
 
-Backend em **Java 21 + Spring Boot 3.5** para gestão de prospecção B2B: empresas (leads), contatos,
-interações com follow-up, funil de vendas, dashboard e **busca automática de empresas sem site no Google Maps**.
+Sistema de prospecção B2B: empresas (leads), contatos, interações com follow-up, funil de vendas, painel e
+**busca automática de empresas sem site no Google Maps**.
+
+- `backend/` — API em **Java 21 + Spring Boot 3.5** (PostgreSQL/Supabase)
+- `frontend/` — site em **React + TypeScript (Vite)**
+
+## Rodando o site (frontend)
+
+Pré-requisito: Node.js 20+ e o backend rodando em `localhost:8080`.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Abra http://localhost:5173 e entre com o usuário do backend (inicial: `admin@fsa.com.br` / `admin123`).
+Em desenvolvimento o Vite repassa `/api` para `localhost:8080`, então não há nada para configurar.
+
+### Publicando na Vercel
+
+1. No projeto da Vercel: **Settings → Git** → conecte este repositório.
+2. **Settings → Build & Deployment → Root Directory**: `frontend` (framework: Vite).
+3. **Settings → Environment Variables**: `VITE_API_URL` = URL pública do backend
+   (ex.: `https://prospectradar-api.onrender.com`). O backend precisa estar publicado na internet —
+   `localhost` só funciona no seu computador.
+4. No backend, inclua o domínio do site em `CORS_ORIGENS` (o `https://prospectradar-b2b.vercel.app` já vem liberado).
 
 ## Abrir no VS Code
 
