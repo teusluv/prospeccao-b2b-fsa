@@ -10,4 +10,5 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/prospeccao-b2b-*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Plano gratuito do Render tem 512 MB: limita a memória da JVM
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=60", "-XX:+UseSerialGC", "-Xss512k", "-jar", "app.jar"]

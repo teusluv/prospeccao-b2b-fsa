@@ -7,7 +7,8 @@ import EmpresaFormModal from '../components/EmpresaForm'
 import { useToast } from '../components/Toast'
 import { Carregando, corEtapa, Erro, EtapaBadge, Modal, Vazio } from '../components/ui'
 import {
-  deInputDataHora, ETAPAS, formatarCnpj, formatarData, formatarDataHora, linkWhatsapp, NOME_ETAPA, NOME_PORTE,
+  deInputDataHora, ETAPAS, formatarCnpj, formatarData, formatarDataHora, linkGoogle, linkGoogleMaps, linkWhatsapp,
+  NOME_ETAPA, NOME_PORTE,
   NOME_TIPO, nomeEmpresa, reais, TIPOS_INTERACAO,
 } from '../formato'
 
@@ -68,6 +69,9 @@ export default function EmpresaDetalhe() {
           <p>{empresa.segmento ?? 'Sem segmento'} · {empresa.cidade ?? 'Cidade não informada'}{empresa.uf ? `/${empresa.uf}` : ''}</p>
         </div>
         <div className="acoes">
+          <a className="btn" href={linkGoogle(nomeEmpresa(empresa), empresa.cidade, empresa.uf)} target="_blank" rel="noreferrer"
+            title="Pesquisar no Google para achar telefone, Instagram, endereço">Pesquisar no Google</a>
+          <a className="btn" href={linkGoogleMaps(nomeEmpresa(empresa), empresa.cidade, empresa.uf)} target="_blank" rel="noreferrer">Google Maps</a>
           {whats && <a className="btn" href={whats} target="_blank" rel="noreferrer">WhatsApp</a>}
           {empresa.telefone && <a className="btn" href={`tel:${empresa.telefone}`}>Ligar</a>}
           <button className="btn" onClick={() => setEditando(true)}>Editar</button>
@@ -130,7 +134,9 @@ export default function EmpresaDetalhe() {
             <dl className="dados" style={{ margin: 0 }}>
               <div><dt>Razão social</dt><dd>{empresa.razaoSocial}</dd></div>
               <div><dt>CNPJ</dt><dd>{formatarCnpj(empresa.cnpj)}</dd></div>
-              <div><dt>Telefone</dt><dd>{empresa.telefone ?? '—'}</dd></div>
+              <div><dt>Telefone</dt><dd>{empresa.telefone ?? (
+                <a href={linkGoogle(nomeEmpresa(empresa), empresa.cidade, empresa.uf)} target="_blank" rel="noreferrer">Procurar no Google</a>
+              )}</dd></div>
               <div><dt>E-mail</dt><dd>{empresa.email ? <a href={`mailto:${empresa.email}`}>{empresa.email}</a> : '—'}</dd></div>
               <div><dt>Site</dt><dd>{empresa.site ? <a href={empresa.site.startsWith('http') ? empresa.site : `https://${empresa.site}`} target="_blank" rel="noreferrer">{empresa.site}</a> : <span className="badge badge-warn">Sem site</span>}</dd></div>
               <div><dt>Porte</dt><dd>{empresa.porte ? NOME_PORTE[empresa.porte] : '—'}</dd></div>

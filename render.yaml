@@ -1,0 +1,26 @@
+# Blueprint do Render: publica o backend Java (Docker) no plano gratuito.
+# No Render: New -> Blueprint -> escolha este repositório. Ele pede os valores marcados com sync: false.
+services:
+  - type: web
+    name: prospectradar-api
+    runtime: docker
+    plan: free
+    region: oregon            # mesma região do banco no Supabase (us-west-2)
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL
+        sync: false           # jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:5432/postgres?sslmode=require
+      - key: DB_USUARIO
+        sync: false           # postgres.<id-do-projeto>
+      - key: DB_SENHA
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGENS
+        value: https://prospectradar-b2b.vercel.app,https://*.vercel.app,http://localhost:*
+      - key: GOOGLE_PLACES_API_KEY
+        sync: false           # opcional; deixe vazio para usar só o OpenStreetMap

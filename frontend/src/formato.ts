@@ -58,6 +58,18 @@ export function linkWhatsapp(telefone: string | null) {
   return `https://wa.me/${digitos}`
 }
 
+/** Pesquisa no Google pelo nome + cidade, para achar telefone, Instagram etc. */
+export function linkGoogle(nome: string | null, cidade?: string | null, uf?: string | null) {
+  const q = [nome, cidade, uf].filter(Boolean).join(' ')
+  return `https://www.google.com/search?q=${encodeURIComponent(q)}`
+}
+
+/** Mesma pesquisa direto no Google Maps (costuma mostrar telefone e horário). */
+export function linkGoogleMaps(nome: string | null, cidade?: string | null, uf?: string | null) {
+  const q = [nome, cidade, uf].filter(Boolean).join(' ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`
+}
+
 /** Converte ISO para o valor de um <input type="datetime-local"> (hora local). */
 export function paraInputDataHora(iso: string | null) {
   if (!iso) return ''

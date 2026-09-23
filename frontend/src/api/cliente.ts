@@ -50,7 +50,9 @@ async function req<T>(metodo: string, caminho: string, corpo?: unknown): Promise
   try {
     resp = await fetch(BASE + caminho, { method: metodo, headers, body })
   } catch {
-    throw new ErroApi(0, 'Não foi possível falar com o servidor. O backend está rodando?')
+    throw new ErroApi(0, BASE
+      ? 'Não foi possível falar com o servidor. Se ele estava parado, pode levar até 1 minuto para acordar — tente de novo.'
+      : 'Não foi possível falar com o servidor. O backend está rodando?')
   }
 
   if (resp.status === 401 && token) {

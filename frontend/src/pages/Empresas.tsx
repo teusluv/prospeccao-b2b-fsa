@@ -5,7 +5,7 @@ import type { EtapaFunil, ImportacaoResponse, Pagina, Empresa } from '../api/tip
 import EmpresaFormModal from '../components/EmpresaForm'
 import { Carregando, Erro, EtapaBadge, Modal, Vazio } from '../components/ui'
 import { useToast } from '../components/Toast'
-import { ETAPAS, NOME_ETAPA, nomeEmpresa, reais, UFS } from '../formato'
+import { ETAPAS, linkGoogle, NOME_ETAPA, nomeEmpresa, reais, UFS } from '../formato'
 
 export default function Empresas() {
   const [params, setParams] = useSearchParams()
@@ -116,7 +116,10 @@ export default function Empresas() {
                     <tr key={e.id} className="clicavel" onClick={() => navegar(`/empresas/${e.id}`)}>
                       <td className="nome-cel"><strong>{nomeEmpresa(e)}</strong><span>{e.segmento ?? e.razaoSocial}</span></td>
                       <td className="some-mobile">{e.cidade ? `${e.cidade}${e.uf ? `/${e.uf}` : ''}` : '—'}</td>
-                      <td className="some-mobile nowrap">{e.telefone ?? '—'}</td>
+                      <td className="some-mobile nowrap">{e.telefone ?? (
+                        <a className="pequeno" href={linkGoogle(nomeEmpresa(e), e.cidade, e.uf)} target="_blank" rel="noreferrer"
+                          onClick={(ev) => ev.stopPropagation()}>Procurar no Google</a>
+                      )}</td>
                       <td>{e.site ? <span className="badge badge-ok">Tem site</span> : <span className="badge badge-warn">Sem site</span>}</td>
                       <td><EtapaBadge etapa={e.etapa} /></td>
                       <td className="some-mobile nowrap">{reais(e.valorEstimado)}</td>

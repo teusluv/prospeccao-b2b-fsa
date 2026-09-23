@@ -30,27 +30,27 @@ npm run dev
 Abra http://localhost:5173 e entre com o usuário do backend (inicial: `admin@fsa.com.br` / `admin123`).
 Em desenvolvimento o Vite repassa `/api` para `localhost:8080`, então não há nada para configurar.
 
-### Publicando na Vercel
+### Publicando na internet (Render + Vercel)
 
+O site (Vercel) precisa de um backend público — `localhost` só existe no seu computador.
+
+**1. Backend no Render (gratuito)**
+1. Crie uma conta em https://render.com entrando com o GitHub.
+2. **New → Blueprint** → escolha este repositório. O Render lê o `render.yaml`.
+3. Preencha `DB_URL`, `DB_USUARIO` e `DB_SENHA` com os mesmos valores do `backend/.env`
+   (use o **Session pooler** do Supabase; o Render não tem IPv6). `GOOGLE_PLACES_API_KEY` pode ficar vazio.
+4. **Apply**. O primeiro deploy leva ~5 min. Anote a URL (ex.: `https://prospectradar-api.onrender.com`)
+   e teste `https://…onrender.com/actuator/health`.
+
+No plano gratuito o backend "dorme" após 15 min sem uso; o primeiro acesso depois disso leva ~1 min.
+
+**2. Site na Vercel**
 1. No projeto da Vercel: **Settings → Git** → conecte este repositório.
 2. **Settings → Build & Deployment → Root Directory**: `frontend` (framework: Vite).
-3. **Settings → Environment Variables**: `VITE_API_URL` = URL pública do backend
-   (ex.: `https://prospectradar-api.onrender.com`). O backend precisa estar publicado na internet —
-   `localhost` só funciona no seu computador.
-4. No backend, inclua o domínio do site em `CORS_ORIGENS` (o `https://prospectradar-b2b.vercel.app` já vem liberado).
+3. **Settings → Environment Variables**: `VITE_API_URL` = URL do Render (sem `/` no final).
+4. **Deployments → Redeploy**.
 
-## Abrir no VS Code
-
-```bash
-git clone https://github.com/teusluv/prospeccao-b2b-fsa.git
-cd prospeccao-b2b-fsa
-git checkout claude/brave-pascal-nj3677
-code .
-```
-
-Aceite as extensões recomendadas (Java Extension Pack, Spring Boot Tools, REST Client).
-Para rodar: aba **Run and Debug** → **API (H2 em memória)** → ▶️.
-O arquivo `backend/requisicoes.http` tem chamadas prontas para testar a API (botão "Send Request").
+O CORS do backend já libera `https://prospectradar-b2b.vercel.app` e previews `*.vercel.app`.
 
 ## Rodando pelo terminal
 

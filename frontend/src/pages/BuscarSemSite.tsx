@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../api/cliente'
 import type { BuscaResponse, Fonte, Fontes } from '../api/tipos'
 import { Carregando, Erro, Vazio } from '../components/ui'
-import { linkWhatsapp, NOME_SITUACAO, UFS } from '../formato'
+import { linkGoogle, linkWhatsapp, NOME_SITUACAO, UFS } from '../formato'
 
 const OUTRO = '__OUTRO__'
 const SUGESTOES_GOOGLE = ['Restaurantes', 'Padarias', 'Salões de beleza', 'Barbearias', 'Oficinas mecânicas',
@@ -169,6 +169,7 @@ export default function BuscarSemSite() {
                               <div className="lugar-acoes">
                                 {l.empresaId && <Link className="btn btn-sm" to={`/empresas/${l.empresaId}`}>Abrir</Link>}
                                 {whats && <a className="btn btn-sm" href={whats} target="_blank" rel="noreferrer">WhatsApp</a>}
+                                <a className="btn btn-sm" href={linkGoogle(l.nome, cidade, uf)} target="_blank" rel="noreferrer">Google</a>
                                 {l.mapaUrl && <a className="btn btn-sm btn-fantasma" href={l.mapaUrl} target="_blank" rel="noreferrer">Mapa</a>}
                               </div>
                             </td>
