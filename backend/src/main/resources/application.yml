@@ -30,7 +30,7 @@ app:
     secret: ${JWT_SECRET:troque-este-segredo-em-producao-0123456789abcdef}
     expiracao-minutos: ${JWT_EXPIRACAO_MINUTOS:480}
   cors:
-    origens-permitidas: ${CORS_ORIGENS:http://localhost:3000,http://localhost:5173,https://prospectradar-b2b.vercel.app}
+    origens-permitidas: ${CORS_ORIGENS:http://localhost:*,http://127.0.0.1:*,https://prospectradar-b2b.vercel.app}
   admin:
     nome: ${ADMIN_NOME:Administrador}
     email: ${ADMIN_EMAIL:admin@fsa.com.br}

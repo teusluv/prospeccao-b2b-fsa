@@ -28,7 +28,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@fsa.com.br}
       ADMIN_SENHA: ${ADMIN_SENHA:-admin123}
       GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY:-}
-      CORS_ORIGENS: ${CORS_ORIGENS:-http://localhost:3000,http://localhost:5173,https://prospectradar-b2b.vercel.app}
+      CORS_ORIGENS: ${CORS_ORIGENS:-http://localhost:*,http://127.0.0.1:*,https://prospectradar-b2b.vercel.app}
     ports:
       - "8080:8080"
 

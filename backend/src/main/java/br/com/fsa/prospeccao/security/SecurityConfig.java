@@ -66,7 +66,8 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(AppProperties props) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(props.cors().origensPermitidas());
+        // padrões aceitam curinga de porta, ex.: http://localhost:* (o Vite muda de porta se a 5173 estiver ocupada)
+        config.setAllowedOriginPatterns(props.cors().origensPermitidas());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Location"));

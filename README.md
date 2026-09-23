@@ -155,7 +155,7 @@ Erros seguem o padrão RFC 7807 (`application/problem+json`); erros de validaç�
 | `DB_POOL` | `5` | Máximo de conexões abertas com o banco |
 | `JWT_SECRET` | valor de exemplo | **Troque em produção** (mín. 32 caracteres) |
 | `JWT_EXPIRACAO_MINUTOS` | `480` | Validade do token |
-| `CORS_ORIGENS` | `http://localhost:3000,http://localhost:5173` | Origens do frontend |
+| `CORS_ORIGENS` | `http://localhost:*,http://127.0.0.1:*,https://prospectradar-b2b.vercel.app` | Origens do frontend (aceita `*` na porta) |
 | `ADMIN_NOME`, `ADMIN_EMAIL`, `ADMIN_SENHA` | admin@fsa.com.br / admin123 | Admin criado no primeiro start |
 | `GOOGLE_PLACES_API_KEY` | vazio | Habilita a busca no Google Maps (opcional) |
 | `OSM_OVERPASS_URL` | `https://overpass-api.de/api/interpreter` | Servidor Overpass do OpenStreetMap |
