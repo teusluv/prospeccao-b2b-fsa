@@ -33,8 +33,39 @@ Em desenvolvimento o Vite repassa `/api` para `localhost:8080`, então não há 
 ### Publicando na internet (Render + Vercel)
 
 O site (Vercel) precisa de um backend público — `localhost` só existe no seu computador.
+Há duas opções gratuitas para o backend: **Hugging Face** (não pede cartão) ou **Render** (pede cartão para
+verificação, mesmo no plano grátis).
 
-**1. Backend no Render (gratuito)**
+**1a. Backend no Hugging Face Spaces (gratuito, sem cartão)**
+1. Crie uma conta em https://huggingface.co/join e confirme o e-mail.
+2. Crie o token: avatar → **Settings → Access Tokens → Create new token** → tipo **Write** → copie o token.
+3. Crie o Space: **New → Space**. Nome `prospectradar-api`, **SDK: Docker** → **Blank**,
+   hardware **CPU basic (Free)**, visibilidade **Public** → **Create Space**.
+   Precisa ser público para o site conseguir acessar. Só o código fica visível; as senhas ficam nos secrets.
+4. No Space, em **Settings → Variables and secrets**, clique em **New secret** para cada linha:
+
+   | Nome | Valor |
+   |---|---|
+   | `SPRING_PROFILES_ACTIVE` | `prod` |
+   | `DB_URL` | mesmo valor do `backend/.env` (Session pooler, porta 5432) |
+   | `DB_USUARIO` | mesmo valor do `backend/.env` |
+   | `DB_SENHA` | a senha do banco |
+   | `JWT_SECRET` | resultado de `openssl rand -base64 48` |
+   | `CORS_ORIGENS` | `https://prospectradar-b2b.vercel.app,https://*.vercel.app,http://localhost:*` |
+
+5. No Terminal, na pasta do projeto:
+   ```bash
+   ./publicar-huggingface.sh SEU_USUARIO_DO_HUGGING_FACE
+   ```
+   Cole o token quando ele pedir. A construção leva de 5 a 10 minutos (aba **Logs** do Space).
+6. Quando aparecer **Running**, o endereço é `https://SEU_USUARIO-prospectradar-api.hf.space`
+   (tudo minúsculo; `_` e `.` viram `-`; o script mostra o endereço certo no final).
+   Teste `…hf.space/actuator/health`: deve mostrar `{"status":"UP"}`.
+
+Depois de mudar o backend, rode o script de novo para atualizar. No plano gratuito, o Space "dorme" depois de
+48 h sem uso. Ele volta sozinho quando alguém abre a página do Space, o que leva ~1 min.
+
+**1b. Backend no Render (gratuito, pede cartão)**
 1. Crie uma conta em https://render.com entrando com o GitHub.
 2. **New → Blueprint** → escolha este repositório. O Render lê o `render.yaml`.
 3. Preencha `DB_URL`, `DB_USUARIO` e `DB_SENHA` com os mesmos valores do `backend/.env`
@@ -47,7 +78,8 @@ No plano gratuito o backend "dorme" após 15 min sem uso; o primeiro acesso depo
 **2. Site na Vercel**
 1. No projeto da Vercel: **Settings → Git** → conecte este repositório.
 2. **Settings → Build & Deployment → Root Directory**: `frontend` (framework: Vite).
-3. **Settings → Environment Variables**: `VITE_API_URL` = URL do Render (sem `/` no final).
+3. **Settings → Environment Variables**: `VITE_API_URL` = URL do backend, do Hugging Face ou do Render
+   (sem `/` no final).
 4. **Deployments → Redeploy**.
 
 O CORS do backend já libera `https://prospectradar-b2b.vercel.app` e previews `*.vercel.app`.
